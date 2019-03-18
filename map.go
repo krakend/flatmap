@@ -176,10 +176,14 @@ func (m *Map) moveSliceAttribute(original, newKey string) {
 // Expand expands the Map into a more complex structure. This is the reverse of the Flatten operation.
 func (m *Map) Expand() map[string]interface{} {
 	res := map[string]interface{}{}
+	hasCollections := false
 	for k, v := range m.m {
 		ks := m.t.Keys(k)
 		tr := res
 
+		if ks[len(ks)-1] == "#" {
+			hasCollections = true
+		}
 		for _, tk := range ks[:len(ks)-1] {
 			trnew, ok := tr[tk]
 			if !ok {
@@ -191,28 +195,28 @@ func (m *Map) Expand() map[string]interface{} {
 		tr[ks[len(ks)-1]] = v
 	}
 
-	return m.expandNestedCollections(0, res).(map[string]interface{})
+	if !hasCollections {
+		return res
+	}
+
+	return m.expandNestedCollections(res).(map[string]interface{})
 }
 
-func (m *Map) expandNestedCollections(level int, original map[string]interface{}) interface{} {
-	res := map[string]interface{}{}
+func (m *Map) expandNestedCollections(original map[string]interface{}) interface{} {
 	for k, v := range original {
-		switch t := v.(type) {
-		case map[string]interface{}:
-			res[k] = m.expandNestedCollections(level+1, t)
-		default:
-			res[k] = t
+		if t, ok := v.(map[string]interface{}); ok {
+			original[k] = m.expandNestedCollections(t)
 		}
 	}
 
 	size, ok := original["#"]
 	if !ok {
-		return res
+		return original
 	}
 
 	col := make([]interface{}, size.(int))
 	for k := range col {
-		col[k] = res[strconv.Itoa(k)]
+		col[k] = original[strconv.Itoa(k)]
 	}
 	return col
 }
