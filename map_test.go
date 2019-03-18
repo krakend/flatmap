@@ -49,6 +49,28 @@ func TestMap_Del(t *testing.T) {
 			},
 		},
 		{
+			name:    "element_in_struct_with_wildcard",
+			pattern: "a.*.supu",
+			in: map[string]interface{}{
+				"a": map[string]interface{}{
+					"first": map[string]interface{}{
+						"supu": 42,
+						"tupu": false,
+					},
+					"last": map[string]interface{}{
+						"supu": 42,
+						"tupu": false,
+					},
+				},
+				"tupu": false,
+			},
+			out: map[string]interface{}{
+				"a.first.tupu": false,
+				"a.last.tupu":  false,
+				"tupu":         false,
+			},
+		},
+		{
 			name:    "struct",
 			pattern: "internal",
 			in: map[string]interface{}{
@@ -289,6 +311,24 @@ func TestMap_Move(t *testing.T) {
 				"b": map[string]interface{}{"a": 42},
 			},
 			out: map[string]interface{}{"a": 42, "c": 42},
+		},
+		{
+			name: "from_struct_with_wildcard",
+			src:  "b.*.c",
+			dst:  "b.*.x",
+			in: map[string]interface{}{
+				"c": 42,
+				"b": map[string]interface{}{
+					"first": map[string]interface{}{"c": map[string]interface{}{"d": 42}},
+					"last":  map[string]interface{}{"m": 42, "c": map[string]interface{}{"d": 42}},
+				},
+			},
+			out: map[string]interface{}{
+				"c":           42,
+				"b.first.x.d": 42,
+				"b.last.x.d":  42,
+				"b.last.m":    42,
+			},
 		},
 		{
 			name: "from_collection",

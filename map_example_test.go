@@ -16,6 +16,11 @@ func ExampleMap() {
 			"ac":  23,
 			"abc": 23,
 			"a": map[string]interface{}{
+				"a": map[string]interface{}{
+					"b": true,
+					"c": 42,
+					"d": "tupu",
+				},
 				"b": true,
 				"c": 42,
 				"d": "tupu",
@@ -68,6 +73,7 @@ func ExampleMap() {
 	flatten, _ := Flatten(sample, DefaultTokenizer)
 
 	flatten.Del("a.b")
+	flatten.Del("a.*.a")
 	flatten.Del("a.collection.1.b")
 	flatten.Del("a.collection.*.d")
 	flatten.Del("a.collection2.*.d.*.d")
