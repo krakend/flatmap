@@ -34,6 +34,7 @@ type Map struct {
 	re *regexp.Regexp
 }
 
+// Move makes changes in the flatten hierarchy moving contents from origin to newKey
 func (m *Map) Move(original, newKey string) {
 	if v, ok := m.m[original]; ok {
 		m.m[newKey] = v
@@ -172,6 +173,7 @@ func (m *Map) moveSliceAttribute(original, newKey string) {
 	}
 }
 
+// Expand expands the Map into a more complex structure. This is the reverse of the Flatten operation.
 func (m *Map) Expand() map[string]interface{} {
 	res := map[string]interface{}{}
 	for k, v := range m.m {

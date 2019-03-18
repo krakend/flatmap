@@ -5,14 +5,14 @@ import (
 	"strings"
 )
 
-// Tokenizer is function that converts a slice of strings into a single one
+// Tokenizer is an interface for key manipulators
 type Tokenizer interface {
 	Separator() string
 	Token([]string) string
 	Keys(string) []string
 }
 
-// StringTokenizer is a Tokenizer with the injected separator
+// StringTokenizer is a Tokenizer using the string as separator
 type StringTokenizer string
 
 // Token returns a token joining all the keys with s as separator
@@ -27,7 +27,7 @@ func (s StringTokenizer) Separator() string { return string(s) }
 // DefaultTokenizer is a tokenizer using a dot or fullstop
 var DefaultTokenizer = StringTokenizer(".")
 
-// Flatten take a hierarchy and flatten it using the tokenizer supplied
+// Flatten takes a hierarchy and flatten it using the tokenizer supplied
 func Flatten(m map[string]interface{}, tokenizer Tokenizer) (*Map, error) {
 	result, err := newMap(tokenizer)
 	if err != nil {
