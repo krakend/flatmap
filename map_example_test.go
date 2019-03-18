@@ -65,54 +65,75 @@ func ExampleMap() {
 		},
 	}
 
-	res, _ := Flatten(sample, DefaultTokenizer)
+	flatten, _ := Flatten(sample, DefaultTokenizer)
 
-	res.Del("a.b")
-	res.Del("a.collection.1.b")
-	res.Del("a.collection.*.d")
-	res.Del("a.collection2.*.d.*.d")
-	res.Move("tupu", "tuputupu")
-	res.Move("a.c", "a.cb")
-	res.Move("a.a", "acb")
-	res.Del("a.ab")
+	flatten.Del("a.b")
+	flatten.Del("a.collection.1.b")
+	flatten.Del("a.collection.*.d")
+	flatten.Del("a.collection2.*.d.*.d")
+	flatten.Move("tupu", "tuputupu")
+	flatten.Move("a.c", "a.cb")
+	flatten.Move("a.a", "acb")
+	flatten.Del("a.ab")
 
-	b, _ := json.MarshalIndent(res.m, "", "\t")
+	res := flatten.Expand()
+
+	b, _ := json.MarshalIndent(res, "", "\t")
 	fmt.Println(string(b))
-
-	// fmt.Println(res.Expand())
 
 	// output:
 	// {
-	// 	"a.aa": 23,
-	// 	"a.abc": 23,
-	// 	"a.ac": 23,
-	// 	"a.cb": 42,
-	// 	"a.collection.#": 2,
-	// 	"a.collection.0.b": false,
-	// 	"a.collection.0.dx": "foobar",
-	// 	"a.collection.1.c": 42,
-	// 	"a.collection2.#": 3,
-	// 	"a.collection2.0.d.#": 3,
-	// 	"a.collection2.0.d.0.a": 1,
-	// 	"a.collection2.1.d": [
-	// 		1,
-	// 		2,
-	// 		3,
-	// 		4,
-	// 		5
-	// 	],
-	// 	"a.collection2.2.d": [
-	// 		1,
-	// 		2,
-	// 		3,
-	// 		4,
-	// 		5
-	// 	],
-	// 	"a.d": "tupu",
+	// 	"a": {
+	// 		"aa": 23,
+	// 		"abc": 23,
+	// 		"ac": 23,
+	// 		"cb": 42,
+	// 		"collection": [
+	// 			{
+	// 				"b": false,
+	// 				"dx": "foobar"
+	// 			},
+	// 			{
+	// 				"c": 42
+	// 			}
+	// 		],
+	// 		"collection2": [
+	// 			{
+	// 				"d": [
+	// 					{
+	// 						"a": 1
+	// 					},
+	// 					null,
+	// 					null
+	// 				]
+	// 			},
+	// 			{
+	// 				"d": [
+	// 					1,
+	// 					2,
+	// 					3,
+	// 					4,
+	// 					5
+	// 				]
+	// 			},
+	// 			{
+	// 				"d": [
+	// 					1,
+	// 					2,
+	// 					3,
+	// 					4,
+	// 					5
+	// 				]
+	// 			}
+	// 		],
+	// 		"d": "tupu"
+	// 	},
 	// 	"aa": 23,
-	// 	"acb.b": true,
-	// 	"acb.c": 42,
-	// 	"acb.d": "tupu",
+	// 	"acb": {
+	// 		"b": true,
+	// 		"c": 42,
+	// 		"d": "tupu"
+	// 	},
 	// 	"foo": "bar",
 	// 	"supu": 42,
 	// 	"tuputupu": false
