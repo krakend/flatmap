@@ -3,8 +3,12 @@ package tree
 import (
 	"fmt"
 	"sort"
-	"strings"
 )
+
+type edge struct {
+	label string
+	n     *node
+}
 
 type node struct {
 	Value        interface{}
@@ -118,15 +122,17 @@ func (n *node) IsLeaf() bool {
 }
 
 func (n *node) expand() interface{} {
-	if n.IsLeaf() {
+	children := len(n.edges)
+	if children == 0 {
 		return n.Value
 	}
 
 	if n.isCollection {
-		res := make([]interface{}, len(n.edges))
+		res := make([]interface{}, children)
 		for i, e := range n.edges {
 			res[i] = e.n.Get()
 		}
+
 		return res
 	}
 
@@ -146,7 +152,6 @@ func (n *node) flatten(i interface{}) {
 		}
 	case []interface{}:
 		n.isCollection = true
-		// update(append(ks, "#"), len(vs))
 		for i, e := range v {
 			n.Add([]string{fmt.Sprintf("%d", i)}, e)
 		}
@@ -157,36 +162,23 @@ func (n *node) flatten(i interface{}) {
 }
 
 func (n *node) sort() {
-	s := &sorter{
-		n: n,
-	}
-	sort.Sort(s)
+	sort.Sort(n)
 	for _, e := range n.edges {
 		e.n.sort()
 	}
 }
 
-func (n *node) writeTo(bd *strings.Builder) {
-	for i, e := range n.edges {
-		e.writeTo(bd, []bool{i == len(n.edges)-1})
-	}
+func (n *node) Len() int {
+	return len(n.edges)
 }
 
-type sorter struct {
-	n *node
-}
-
-func (s *sorter) Len() int {
-	return len(s.n.edges)
-}
-
-func (s *sorter) Less(i, j int) bool {
-	if s.n.isCollection {
+func (n *node) Less(i, j int) bool {
+	if n.isCollection {
 		return i < j
 	}
-	return s.n.edges[i].label < s.n.edges[j].label
+	return n.edges[i].label < n.edges[j].label
 }
 
-func (s *sorter) Swap(i, j int) {
-	s.n.edges[i], s.n.edges[j] = s.n.edges[j], s.n.edges[i]
+func (n *node) Swap(i, j int) {
+	n.edges[i], n.edges[j] = n.edges[j], n.edges[i]
 }

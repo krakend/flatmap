@@ -151,11 +151,3 @@ func (t *Tree) Move(src, dst []string) {
 func (t *Tree) Sort() {
 	t.root.sort()
 }
-
-// String returns a string representation of the tree structure.
-func (t *Tree) String() string {
-	t.sb.Reset()
-	t.sb.WriteByte('\n')
-	t.root.writeTo(t.sb)
-	return t.sb.String()
-}
