@@ -6,14 +6,14 @@ import (
 	"strings"
 )
 
-var defaultCollectionPatter = regexp.MustCompile(`\.\*\.`)
+var defaultCollectionPattern = regexp.MustCompile(`\.\*\.`)
 
 func newMap(t Tokenizer) (*Map, error) {
 	sep := t.Separator()
 	var hasWildcard *regexp.Regexp
 	var err error
 	if sep == "." {
-		hasWildcard = defaultCollectionPatter
+		hasWildcard = defaultCollectionPattern
 	} else {
 		hasWildcard, err = regexp.Compile(sep + `\*` + sep)
 	}
