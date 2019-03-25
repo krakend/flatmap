@@ -10,6 +10,13 @@ type edge struct {
 	n     *node
 }
 
+func newNode(depth int) *node {
+	return &node{
+		edges: []*edge{},
+		depth: depth,
+	}
+}
+
 type node struct {
 	Value        interface{}
 	isCollection bool
@@ -30,12 +37,9 @@ func (n *node) Add(ks []string, v interface{}) {
 		}
 	}
 
-	newNode := &node{
-		edges: []*edge{},
-		depth: n.depth + 1,
-	}
-	n.edges = append(n.edges, &edge{label: ks[0], n: newNode})
-	newNode.Add(ks[1:], v)
+	child := newNode(n.depth + 1)
+	n.edges = append(n.edges, &edge{label: ks[0], n: child})
+	child.Add(ks[1:], v)
 }
 
 func (n *node) Del(ks ...string) {

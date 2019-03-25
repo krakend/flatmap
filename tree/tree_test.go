@@ -9,6 +9,8 @@ import (
 
 const tabSize = 4
 
+var sb = new(strings.Builder)
+
 func (n *node) writeTo(bd *strings.Builder) {
 	for i, e := range n.edges {
 		e.writeTo(bd, []bool{i == len(n.edges)-1})
@@ -50,10 +52,10 @@ func (e *edge) writeTo(bd *strings.Builder, tabList []bool) {
 }
 
 func (t *Tree) String() string {
-	t.sb.Reset()
-	t.sb.WriteByte('\n')
-	t.root.writeTo(t.sb)
-	return t.sb.String()
+	sb.Reset()
+	sb.WriteByte('\n')
+	t.root.writeTo(sb)
+	return sb.String()
 }
 
 func TestTree_Del(t *testing.T) {
@@ -470,6 +472,25 @@ func TestTree_Move(t *testing.T) {
 `,
 		},
 		{
+			name: "in_struct_depth",
+			src:  "b.a",
+			dst:  "b.b.a.b.a.b.c",
+			in: map[string]interface{}{
+				"a": 1,
+				"b": map[string]interface{}{"a": 42},
+			},
+			out: `
+├── a	1
+└── b
+    └── b
+        └── a
+            └── b
+                └── a
+                    └── b
+                        └── c	42
+`,
+		},
+		{
 			name: "from_struct",
 			src:  "b.a",
 			dst:  "c",
@@ -503,6 +524,33 @@ func TestTree_Move(t *testing.T) {
 │       ├── m	42
 │       └── x
 │           └── d	42
+└── c	42
+`,
+		},
+		{
+			name: "from_struct_with_wildcard_deep",
+			src:  "b.*.c",
+			dst:  "b.*.c.b.x",
+			in: map[string]interface{}{
+				"c": 42,
+				"b": map[string]interface{}{
+					"first": map[string]interface{}{"c": map[string]interface{}{"d": 42}},
+					"last":  map[string]interface{}{"m": 42, "c": map[string]interface{}{"d": 42}},
+				},
+			},
+			out: `
+├── b
+│   ├── first
+│   │   └── c
+│   │       └── b
+│   │           └── x
+│   │               └── d	42
+│   └── last
+│       ├── c
+│       │   └── b
+│       │       └── x
+│       │           └── d	42
+│       └── m	42
 └── c	42
 `,
 		},
@@ -671,13 +719,15 @@ func TestTree_Move(t *testing.T) {
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			res, _ := New(tc.in)
+			res.Sort()
+			original := res.String()
 
 			res.Move(strings.Split(tc.src, "."), strings.Split(tc.dst, "."))
 
 			res.Sort()
 
 			if tree := res.String(); tree != tc.out {
-				t.Errorf("unexpected result (%s -> %s):\n%s\n%s", tc.src, tc.dst, tree, tc.out)
+				t.Errorf("unexpected result (%s -> %s) from:%s\nhave:%s\nwant:%s", tc.src, tc.dst, original, tree, tc.out)
 			}
 		})
 	}
