@@ -33,43 +33,23 @@ func (t *Tree) Add(ks []string, v interface{}) {
 	t.root.Add(ks, v)
 }
 
-func (t *Tree) Get(ks []string) interface{} {
-	return t.root.Get(ks...)
-}
-
 func (t *Tree) Del(ks []string) {
 	t.root.Del(ks...)
 }
 
+func (t *Tree) Get(ks []string) interface{} {
+	return t.root.Get(ks...)
+}
+
 func (t *Tree) Move(src, dst []string) {
 	next := []nodeAndPath{{n: t.root, p: []string{}}}
-	acc := []nodeAndPath{}
 
 	prefixLen := len(src)
 
 	// lookup for the nodes matching the src pattern without the last segment
 
 	if prefixLen > 1 {
-		for _, step := range src[:prefixLen-1] {
-			if step == wildcard {
-				for _, nap := range next {
-					for _, e := range nap.n.edges {
-						acc = append(acc, nodeAndPath{n: e.n, p: append(nap.p, e.label)})
-					}
-				}
-			} else {
-				for _, nap := range next {
-					for _, e := range nap.n.edges {
-						if step == e.label {
-							acc = append(acc, nodeAndPath{n: e.n, p: append(nap.p, e.label)})
-							break
-						}
-					}
-				}
-			}
-			next = acc
-			acc = []nodeAndPath{}
-		}
+		next = t.collectMoveCandidates(src[:prefixLen-1], next)
 	}
 
 	// extract edges from the collected nodes that match the last segment of the src
@@ -93,22 +73,10 @@ func (t *Tree) Move(src, dst []string) {
 
 			edgesToMove = append(edgesToMove, edgeToMove{nodeAndPath: nap, e: e})
 
-			nap.n.edges[i] = nil
+			copy(nap.n.edges[i:], nap.n.edges[i+1:])
+			nap.n.edges[len(nap.n.edges)-1] = nil
+			nap.n.edges = nap.n.edges[:len(nap.n.edges)-1]
 
-			numOfEdges := len(nap.n.edges)
-			if numOfEdges == 1 {
-				nap.n.edges = nap.n.edges[:0]
-				break
-			}
-
-			switch i {
-			case 0:
-				nap.n.edges = nap.n.edges[1:]
-			case numOfEdges - 1:
-				nap.n.edges = nap.n.edges[:len(nap.n.edges)-1]
-			default:
-				nap.n.edges = append(nap.n.edges[:i], nap.n.edges[i+1:]...)
-			}
 			break
 		}
 	}
@@ -121,39 +89,81 @@ func (t *Tree) Move(src, dst []string) {
 
 	// if len(src) > len(dst) this is a promotion
 	if prefixLen > lenDst {
-		for _, n := range edgesToMove {
-			parent := t.root
-			for i, path := range dst[:lenDst-1] {
-				l := path
-				if path == wildcard {
-					l = n.p[i]
-				}
-				found := false
-				for _, e := range parent.edges {
-					if e.label != l {
-						continue
-					}
-					found = true
-					parent = e.n
-					break
-				}
-				if !found {
-					break
-				}
-			}
-
-			n.e.n.SetDepth(parent.depth + 1)
-			n.e.label = dst[lenDst-1]
-			parent.edges = append(parent.edges, n.e)
-		}
+		t.promoteEdges(edgesToMove, dst)
 		return
 	}
 
 	// this is an embedding, so intermediate nodes should be found or created
+	t.embeddingEdges(edgesToMove, dst[prefixLen-1:])
+}
+
+func (t *Tree) Sort() {
+	t.root.sort()
+}
+
+func (t *Tree) collectMoveCandidates(src []string, next []nodeAndPath) []nodeAndPath {
+	acc := []nodeAndPath{}
+	for _, step := range src {
+		if step == wildcard {
+			for _, nap := range next {
+				for _, e := range nap.n.edges {
+					acc = append(acc, nodeAndPath{n: e.n, p: append(nap.p, e.label)})
+				}
+			}
+		} else {
+			for _, nap := range next {
+				for _, e := range nap.n.edges {
+					if step == e.label {
+						acc = append(acc, nodeAndPath{n: e.n, p: append(nap.p, e.label)})
+						break
+					}
+				}
+			}
+		}
+		next, acc = acc, next[:0]
+	}
+	return next
+}
+
+func (t *Tree) promoteEdges(edgesToMove []edgeToMove, dst []string) {
+	var l string
+	lenDst := len(dst)
+	for _, n := range edgesToMove {
+		parent := t.root
+		for i, path := range dst[:lenDst-1] {
+			if path == wildcard {
+				l = n.p[i]
+			} else {
+				l = path
+			}
+
+			found := false
+			for _, e := range parent.edges {
+				if e.label != l {
+					continue
+				}
+				found = true
+				parent = e.n
+				break
+			}
+
+			if !found {
+				break
+			}
+		}
+
+		n.e.n.SetDepth(parent.depth + 1)
+		n.e.label = dst[lenDst-1]
+		parent.edges = append(parent.edges, n.e)
+	}
+}
+
+func (t *Tree) embeddingEdges(edgesToMove []edgeToMove, dst []string) {
 	found := false
+	lenDst := len(dst)
 	for _, em := range edgesToMove {
 		root := em.n
-		for _, k := range dst[prefixLen-1 : lenDst-1] {
+		for _, k := range dst[:lenDst-1] {
 			found = false
 			for _, e := range root.edges {
 				if e.label != k {
@@ -174,10 +184,6 @@ func (t *Tree) Move(src, dst []string) {
 		em.e.n.SetDepth(root.depth + 1)
 		root.edges = append(root.edges, em.e)
 	}
-}
-
-func (t *Tree) Sort() {
-	t.root.sort()
 }
 
 type nodeAndPath struct {

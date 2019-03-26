@@ -67,16 +67,9 @@ func (n *node) Del(ks ...string) {
 	for i, e := range n.edges {
 		if e.label == ks[0] {
 			if lenKs == 1 {
-				n.edges[i] = nil
-				if i == 0 {
-					n.edges = n.edges[1:]
-					return
-				}
-				if i == len(n.edges)-1 {
-					n.edges = n.edges[:i]
-					return
-				}
-				n.edges = append(n.edges[:i], n.edges[i+1:]...)
+				copy(n.edges[i:], n.edges[i+1:])
+				n.edges[len(n.edges)-1] = nil
+				n.edges = n.edges[:len(n.edges)-1]
 				return
 			}
 			e.n.Del(ks[1:]...)
@@ -95,8 +88,10 @@ func (n *node) Get(ks ...string) interface{} {
 		return n.expand()
 	}
 
+	var e *edge
+
 	if lenKs == 1 {
-		for _, e := range n.edges {
+		for _, e = range n.edges {
 			if e.label == ks[0] {
 				return e.n.Get()
 			}
@@ -104,7 +99,7 @@ func (n *node) Get(ks ...string) interface{} {
 		return nil
 	}
 
-	for _, e := range n.edges {
+	for _, e = range n.edges {
 		if e.label == ks[0] {
 			return e.n.Get(ks[1:]...)
 		}
@@ -144,7 +139,7 @@ func (n *node) expand() interface{} {
 		return res
 	}
 
-	res := map[string]interface{}{}
+	res := make(map[string]interface{}, children)
 	for _, e := range n.edges {
 		res[e.label] = e.n.Get()
 	}
