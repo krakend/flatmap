@@ -168,10 +168,9 @@ func (t *Tree) promoteEdges(edgesToMove []edgeToMove, dst []string) {
 func (t *Tree) embeddingEdges(edgesToMove []edgeToMove, dst []string) {
 	lenDst := len(dst)
 	for _, em := range edgesToMove {
-		found := false
 		root := em.n
 		for _, k := range dst[:lenDst-1] {
-			found = false
+			found := false
 			for _, e := range root.edges {
 				if e.label != k {
 					continue
