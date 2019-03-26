@@ -90,46 +90,48 @@ func BenchmarkMove(b *testing.B) {
 }
 
 func getInputData(size int) map[string]interface{} {
-	res := map[string]interface{}{
-		"tupu": false,
+	first := map[string]interface{}{
+		"b": []interface{}{
+			map[string]interface{}{
+				"c": map[string]interface{}{
+					"a": 1,
+				},
+				"aa": 1,
+			},
+			map[string]interface{}{
+				"c": map[string]interface{}{
+					"a": 2,
+				},
+				"aa": 1,
+			},
+		},
+		"aa": 1,
+	}
+	second := map[string]interface{}{
+		"b": []interface{}{
+			map[string]interface{}{
+				"c": map[string]interface{}{
+					"a": 1,
+				},
+				"aa": 1,
+			},
+		},
+		"aa": 1,
+	}
+
+	collection := make([]interface{}, 2*size)
+	for i := 0; i < size; i++ {
+		collection[2*i] = first
+		collection[2*i+1] = second
+	}
+
+	return map[string]interface{}{
+		"a": collection,
 		"b": map[string]interface{}{
 			"a":  42,
 			"bb": true,
 			"b":  map[string]interface{}{"a": 42},
 		},
+		"tupu": false,
 	}
-	collection := []interface{}{}
-	for i := 0; i < size; i++ {
-		collection = append(collection,
-			map[string]interface{}{
-				"b": []interface{}{
-					map[string]interface{}{
-						"c": map[string]interface{}{
-							"a": 1,
-						},
-						"aa": 1,
-					},
-					map[string]interface{}{
-						"c": map[string]interface{}{
-							"a": 2,
-						},
-						"aa": 1,
-					},
-				},
-				"aa": 1,
-			},
-			map[string]interface{}{
-				"b": []interface{}{
-					map[string]interface{}{
-						"c": map[string]interface{}{
-							"a": 1,
-						},
-						"aa": 1,
-					},
-				},
-				"aa": 1,
-			})
-	}
-	res["a"] = collection
-	return res
 }
