@@ -1,8 +1,8 @@
 package tree
 
 import (
-	"fmt"
 	"sort"
+	"strconv"
 )
 
 type edge struct {
@@ -157,7 +157,7 @@ func (n *node) flatten(i interface{}) {
 	case []interface{}:
 		n.isCollection = true
 		for i, e := range v {
-			n.Add([]string{fmt.Sprintf("%d", i)}, e)
+			n.Add([]string{strconv.Itoa(i)}, e)
 		}
 	default:
 		n.isCollection = false
