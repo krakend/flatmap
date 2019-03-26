@@ -190,7 +190,7 @@ func TestTree_Del(t *testing.T) {
 `,
 		},
 		{
-			name:    "collection_element_atributes",
+			name:    "collection_element_attributes",
 			pattern: "a.*.a",
 			in: map[string]interface{}{
 				"a": []interface{}{
@@ -220,7 +220,7 @@ func TestTree_Del(t *testing.T) {
 `,
 		},
 		{
-			name:    "nested_collection_element_atributes",
+			name:    "nested_collection_element_attributes",
 			pattern: "a.*.b.*.c",
 			in: map[string]interface{}{
 				"a": []interface{}{
@@ -273,7 +273,7 @@ func TestTree_Del(t *testing.T) {
 `,
 		},
 		{
-			name:    "large_collection_element_atributes",
+			name:    "large_collection_element_attributes",
 			pattern: "a.*.a",
 			in: map[string]interface{}{
 				"a": []interface{}{
