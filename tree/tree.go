@@ -93,9 +93,11 @@ func (t *Tree) Move(src, dst []string) {
 
 			edgesToMove = append(edgesToMove, edgeToMove{nodeAndPath: nap, e: e})
 
+			nap.n.edges[i] = nil
+
 			numOfEdges := len(nap.n.edges)
 			if numOfEdges == 1 {
-				nap.n.edges = []*edge{}
+				nap.n.edges = nap.n.edges[:0]
 				break
 			}
 

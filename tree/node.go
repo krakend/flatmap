@@ -57,13 +57,17 @@ func (n *node) Del(ks ...string) {
 			return
 		}
 
-		n.edges = []*edge{}
+		for i := range n.edges {
+			n.edges[i] = nil
+		}
+		n.edges = n.edges[:0]
 		return
 	}
 
 	for i, e := range n.edges {
 		if e.label == ks[0] {
 			if lenKs == 1 {
+				n.edges[i] = nil
 				if i == 0 {
 					n.edges = n.edges[1:]
 					return
