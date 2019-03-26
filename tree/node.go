@@ -166,7 +166,14 @@ func (n *node) flatten(i interface{}) {
 }
 
 func (n *node) sort() {
-	sort.Sort(n)
+	if n.IsLeaf() {
+		return
+	}
+
+	if !n.isCollection {
+		sort.Sort(n)
+	}
+
 	for _, e := range n.edges {
 		e.n.sort()
 	}
