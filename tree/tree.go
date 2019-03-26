@@ -8,10 +8,12 @@ const wildcard = "*"
 
 var errNoNilValuesAllowed = errors.New("no nil values allowed")
 
+// Tree is a wrapper over tha root node od a tree
 type Tree struct {
 	root *node
 }
 
+// New returns a new Tee containning a decomposed version of v
 func New(v interface{}) (*Tree, error) {
 	if v == nil {
 		return nil, errNoNilValuesAllowed
@@ -26,6 +28,7 @@ func New(v interface{}) (*Tree, error) {
 	return tr, nil
 }
 
+// Add introduces the value v at the path defined by ks
 func (t *Tree) Add(ks []string, v interface{}) {
 	if v == nil {
 		return
@@ -33,14 +36,17 @@ func (t *Tree) Add(ks []string, v interface{}) {
 	t.root.Add(ks, v)
 }
 
+// Del removes all nodes and edges in the tree matching the path defined by ks
 func (t *Tree) Del(ks []string) {
 	t.root.Del(ks...)
 }
 
+// Get returns all nodes and edges in the tree matching the path defined by ks
 func (t *Tree) Get(ks []string) interface{} {
 	return t.root.Get(ks...)
 }
 
+// Move moves all nodes and edges in the tree matching the path defined by src to dst
 func (t *Tree) Move(src, dst []string) {
 	next := []nodeAndPath{{n: t.root, p: []string{}}}
 
@@ -97,6 +103,7 @@ func (t *Tree) Move(src, dst []string) {
 	t.embeddingEdges(edgesToMove, dst[prefixLen-1:])
 }
 
+// Sort sorts the edges in the tree
 func (t *Tree) Sort() {
 	t.root.sort()
 }

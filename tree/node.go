@@ -107,7 +107,6 @@ func (n *node) Get(ks ...string) interface{} {
 	return nil
 }
 
-// Depth returns the node's depth.
 func (n *node) Depth() int {
 	return n.depth
 }
@@ -119,7 +118,6 @@ func (n *node) SetDepth(d int) {
 	}
 }
 
-// IsLeaf returns whether the node is a leaf.
 func (n *node) IsLeaf() bool {
 	return len(n.edges) == 0
 }
