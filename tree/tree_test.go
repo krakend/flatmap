@@ -375,11 +375,7 @@ func TestTree_Get(t *testing.T) {
 	in := map[string]interface{}{
 		"a": []interface{}{
 			map[string]interface{}{
-				"a":  1,
-				"aa": 1,
-			},
-			map[string]interface{}{
-				"a":  2,
+				"a":  0,
 				"aa": 1,
 			},
 			map[string]interface{}{
@@ -391,35 +387,39 @@ func TestTree_Get(t *testing.T) {
 				"aa": 1,
 			},
 			map[string]interface{}{
-				"a":  1,
+				"a":  3,
 				"aa": 1,
 			},
 			map[string]interface{}{
-				"a":  2,
+				"a":  4,
 				"aa": 1,
 			},
 			map[string]interface{}{
-				"a":  1,
+				"a":  5,
 				"aa": 1,
 			},
 			map[string]interface{}{
-				"a":  2,
+				"a":  6,
 				"aa": 1,
 			},
 			map[string]interface{}{
-				"a":  1,
+				"a":  7,
 				"aa": 1,
 			},
 			map[string]interface{}{
-				"a":  2,
+				"a":  8,
 				"aa": 1,
 			},
 			map[string]interface{}{
-				"a":  1,
+				"a":  9,
 				"aa": 1,
 			},
 			map[string]interface{}{
-				"a":  2,
+				"a":  10,
+				"aa": 1,
+			},
+			map[string]interface{}{
+				"a":  11,
 				"aa": 1,
 			},
 		},
@@ -435,8 +435,19 @@ func TestTree_Get(t *testing.T) {
 		t.Errorf("unexpected result type: %v", v)
 		return
 	}
-	if i != 2 {
+	if i != 1 {
 		t.Errorf("unexpected result %d", i)
+	}
+
+	l := tree.Get([]string{"a", "*", "a"}).([]interface{})
+	if len(l) != 12 {
+		t.Errorf("unexpected number of returned values")
+		return
+	}
+	for i, v := range l {
+		if i != v.(int) {
+			t.Errorf("unexpected value #%d: %v", i, v)
+		}
 	}
 }
 

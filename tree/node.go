@@ -80,7 +80,9 @@ func (n *node) Del(ks ...string) {
 
 func (n *node) Get(ks ...string) interface{} {
 	lenKs := len(ks)
-	if n.IsLeaf() && lenKs > 0 {
+	lenEdges := len(n.edges)
+
+	if lenEdges == 0 && lenKs > 0 {
 		return nil
 	}
 
@@ -88,18 +90,15 @@ func (n *node) Get(ks ...string) interface{} {
 		return n.expand()
 	}
 
-	var e *edge
-
-	if lenKs == 1 {
-		for _, e = range n.edges {
-			if e.label == ks[0] {
-				return e.n.Get()
-			}
+	if ks[0] == wildcard {
+		res := make([]interface{}, lenEdges)
+		for i, e := range n.edges {
+			res[i] = e.n.Get(ks[1:]...)
 		}
-		return nil
+		return res
 	}
 
-	for _, e = range n.edges {
+	for _, e := range n.edges {
 		if e.label == ks[0] {
 			return e.n.Get(ks[1:]...)
 		}
