@@ -152,6 +152,11 @@ func (n *node) flatten(i interface{}) {
 		}
 	case []interface{}:
 		n.isCollection = true
+		if len(v) == 0 {
+			n.Value = v
+			break
+		}
+
 		for i, e := range v {
 			n.Add([]string{strconv.Itoa(i)}, e)
 		}
