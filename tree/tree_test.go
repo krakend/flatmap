@@ -90,6 +90,18 @@ func TestTree_Del(t *testing.T) {
 `,
 		},
 		{
+			name:    "empty map",
+			pattern: "data.*.password",
+			in: map[string]interface{}{
+				"data": map[string]interface{}{},
+			},
+			// but not
+			// ── data    <nil>
+			out: `
+└── data	map[]
+`,
+		},
+		{
 			name:    "plain",
 			pattern: "supu",
 			in: map[string]interface{}{
