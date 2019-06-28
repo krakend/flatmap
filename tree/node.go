@@ -147,11 +147,21 @@ func (n *node) flatten(i interface{}) {
 	switch v := i.(type) {
 	case map[string]interface{}:
 		n.isCollection = false
+		if len(v) == 0 {
+			n.Value = v
+			break
+		}
+
 		for k, e := range v {
 			n.Add([]string{k}, e)
 		}
 	case []interface{}:
 		n.isCollection = true
+		if len(v) == 0 {
+			n.Value = v
+			break
+		}
+
 		for i, e := range v {
 			n.Add([]string{strconv.Itoa(i)}, e)
 		}
