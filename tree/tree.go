@@ -41,6 +41,22 @@ func (t *Tree) Del(ks []string) {
 	t.root.Del(ks...)
 }
 
+// Append appends the contents of the array src to the array dst
+func (t *Tree) Append(src, dst []string) {
+	elements1, ok := t.root.Get(src...).([]interface{})
+	if !ok {
+		return
+	}
+	elements2, ok := t.root.Get(dst...).([]interface{})
+	if !ok {
+		return
+	}
+
+	t.root.Add(dst, append(elements2, elements1...))
+
+	t.root.Del(src...)
+}
+
 // Get returns all nodes and edges in the tree matching the path defined by ks
 func (t *Tree) Get(ks []string) interface{} {
 	return t.root.Get(ks...)

@@ -767,3 +767,39 @@ func TestTree_Move(t *testing.T) {
 		})
 	}
 }
+
+func TestTree_Append(t *testing.T) {
+	for _, tc := range []struct {
+		name string
+		src  string
+		dst  string
+		in   map[string]interface{}
+		out  string
+	}{
+		{
+			name: "plain",
+			src:  "a",
+			dst:  "b",
+			in:   map[string]interface{}{"a": []interface{}{42}, "b": []interface{}{1}},
+			out: `
+└── b []
+    ├── 0	1
+    └── 1	42
+`,
+		},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			res, _ := New(tc.in)
+			res.Sort()
+			original := res.String()
+
+			res.Append(strings.Split(tc.src, "."), strings.Split(tc.dst, "."))
+
+			res.Sort()
+
+			if tree := res.String(); tree != tc.out {
+				t.Errorf("unexpected result (%s -> %s) from:%s\nhave:%s\nwant:%s", tc.src, tc.dst, original, tree, tc.out)
+			}
+		})
+	}
+}
