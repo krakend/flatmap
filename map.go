@@ -94,7 +94,7 @@ func (m *Map) delSliceAttribute(prefix string) {
 	i := strings.Index(prefix, "*")
 	sep := m.t.Separator()
 	prefixRemainder := prefix[i+1:]
-	recursive := strings.Index(prefixRemainder, "*") > -1
+	recursive := strings.Contains(prefixRemainder, "*")
 
 	for k := range m.m {
 		if len(k) < i+2 {
@@ -130,7 +130,7 @@ func (m *Map) moveSliceAttribute(original, newKey string) {
 	i := strings.Index(original, "*")
 	sep := m.t.Separator()
 	originalRemainder := original[i+1:]
-	recursive := strings.Index(originalRemainder, "*") > -1
+	recursive := strings.Contains(originalRemainder, "*")
 
 	newKeyOffset := strings.Index(newKey, "*")
 	newKeyRemainder := newKey[newKeyOffset+1:]
