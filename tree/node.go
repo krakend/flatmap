@@ -1,6 +1,7 @@
 package tree
 
 import (
+	"encoding/json"
 	"sort"
 	"strconv"
 )
@@ -198,4 +199,9 @@ func (n *node) Less(i, j int) bool {
 
 func (n *node) Swap(i, j int) {
 	n.edges[i], n.edges[j] = n.edges[j], n.edges[i]
+}
+
+func (n *node) String() string {
+	b, _ := json.MarshalIndent(*n, "", "\t")
+	return string(b)
 }

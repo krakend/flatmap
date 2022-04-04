@@ -137,6 +137,10 @@ func TestTree_Del(t *testing.T) {
 						"supu": 42,
 						"tupu": false,
 					},
+					"0": map[string]interface{}{
+						"supu": 42,
+						"tupu": true,
+					},
 					"last": map[string]interface{}{
 						"supu": 42,
 						"tupu": false,
@@ -146,6 +150,8 @@ func TestTree_Del(t *testing.T) {
 			},
 			out: `
 ├── a
+│   ├── 0
+│   │   └── tupu	true
 │   ├── first
 │   │   └── tupu	false
 │   └── last
