@@ -124,7 +124,7 @@ func (t *Tree) Sort() {
 	t.root.sort()
 }
 
-func (t *Tree) collectMoveCandidates(src []string, next []nodeAndPath) []nodeAndPath {
+func (*Tree) collectMoveCandidates(src []string, next []nodeAndPath) []nodeAndPath {
 	acc := []nodeAndPath{}
 	for _, step := range src {
 		if step == wildcard {
@@ -181,7 +181,7 @@ func (t *Tree) promoteEdges(edgesToMove []edgeToMove, dst []string) {
 	}
 }
 
-func (t *Tree) embeddingEdges(edgesToMove []edgeToMove, dst []string) {
+func (*Tree) embeddingEdges(edgesToMove []edgeToMove, dst []string) {
 	lenDst := len(dst)
 	for _, em := range edgesToMove {
 		root := em.n
