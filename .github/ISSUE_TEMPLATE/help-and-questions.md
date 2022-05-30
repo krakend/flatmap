@@ -15,7 +15,7 @@ A clear and concise description of what you want to do and how is your setup.
 The content of your `krakend.json`. When using the flexible configuration option, the computed file can be generated using `FC_OUT=out.json`
 ```
 {
-  "version": 2,
+  "version": 3,
   ...
 }
 ```

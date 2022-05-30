@@ -14,7 +14,7 @@ A clear and concise description of what the bug is.
 The content of your `krakend.json`. When using the flexible configuration option, the computed file can be generated using `FC_OUT=out.json`
 ```
 {
-  "version": 2,
+   "version": 3,
   ...
 }
 ```
@@ -38,3 +38,4 @@ If applicable, any logs you saw in the console and debugging information
 
 **Additional context**
 Add any other context about the problem here.
+
