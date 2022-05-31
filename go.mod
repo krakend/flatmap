@@ -1,3 +1,3 @@
-module github.com/devopsfaith/flatmap
+module github.com/krakendio/flatmap
 
 go 1.17
